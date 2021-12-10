@@ -81,7 +81,7 @@ model = LGBMRegressor(boosting_type='gbdt', num_leaves=31, max_depth=- 1, learni
                       min_child_weight=0.001, min_child_samples=10, subsample=1.0, subsample_freq=0,
                       colsample_bytree=0.9, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=- 1,
                       importance_type='split')
-RMSE : 5.2965
+# RMSE : 5.2965
 
 # 모델 학습
 model.fit(x_train, y_train)
