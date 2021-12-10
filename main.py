@@ -9,6 +9,8 @@ submission = pd.read_csv('sample_submission.csv')
 x = train.iloc[:, :-1]
 y = train.iloc[:, -1]
 
+# 정규분포
+# y = np.log1p(y)
 
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=11)
@@ -36,16 +38,50 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 # print(x_train.info())
 # print(x_train.describe())
-
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
+from sklearn.linear_model import Ridge, Lasso
 #모델 정의
+
+
+# model = LinearRegression()
+# RMSE : 6.241782013683741
+
+# model = LogisticRegression()
+# RMSE :  6.496585641704417
+
+# model = RandomForestRegressor()
+# RMSE :  5.5472239703993536
+
+# model = DecisionTreeRegressor()
+# RMSE :  5.812296994047502
+
+# model = GradientBoostingRegressor()
+# RMSE :  5.59496674573263
+
+# model = Ridge()
+# RMSE :  6.123063773037983
+
+# model = Lasso()
+# RMSE :  6.217901010430412
+
+# model = XGBRegressor()
+# RMSE :  5.494675212439629
+
+# model = LGBMRegressor()
+# RMSE :  5.3499672075937115
+
 model = LGBMRegressor(boosting_type='gbdt', num_leaves=31, max_depth=- 1, learning_rate=0.1, n_estimators=400,
                       subsample_for_bin=200000, objective=None, class_weight=None, min_split_gain=0.2,
                       min_child_weight=0.001, min_child_samples=10, subsample=1.0, subsample_freq=0,
                       colsample_bytree=0.9, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=- 1,
                       importance_type='split')
-# 5.2965
-
+RMSE : 5.2965
 
 # 모델 학습
 model.fit(x_train, y_train)
@@ -53,10 +89,45 @@ model.fit(x_train, y_train)
 # test 데이터 예측
 preds = model.predict(x_test)
 
+# 정규분포 풀기
+# y_test = np.expm1(y_test)
+# preds = np.expm1(preds)
 from sklearn.metrics import mean_squared_error
 RMSE = mean_squared_error(y_test, preds)**0.5
 
 print("RMSE : ", RMSE)
+
+
+# GridSearchCV
+from sklearn.model_selection import GridSearchCV
+
+model = LGBMRegressor(boosting_type='gbdt', num_leaves=31, max_depth=- 1, learning_rate=0.1, n_estimators=400,
+                      subsample_for_bin=200000, objective=None, class_weight=None, min_split_gain=0.2,
+                      min_child_weight=0.001, min_child_samples=10, subsample=1.0, subsample_freq=0,
+                      colsample_bytree=0.9, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=- 1,
+                      importance_type='split')
+
+params = {'n_estimators': [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+          'num_leaves': [11, 15, 21, 25, 31, 35, 41, 45],
+          'max_depth': [-1, 128, 160],
+          'learning_rate': [0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.11, 0.12, 0.13, 0.14, 0.15],
+          'subsample_for_bin': [150000, 200000, 160000, 180000, 210000, 220000],
+          'min_split_gain': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+          'min_child_samples': [3, 5, 7, 9, 10, 12, 14, 16, 18, 20],
+          'min_child_weight': [0.001, 0.0025, 0.00025],
+          'subsample': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+          'subsample_freq': [0],
+          'colsample_bytree': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+          'reg_alpha': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+          'reg_lambda': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+          }
+
+gridcv = GridSearchCV(model, param_grid=params, cv=5, scoring='neg_mean_squared_error')
+gridcv.fit(x_train, y_train)
+rmse = np.sqrt(-1 * gridcv.best_score_)
+
+print(f'rmse -> {rmse} best -> ', gridcv.best_params_)
+
 
 
 # submission['INVC_CONT'] = preds
