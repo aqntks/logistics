@@ -41,13 +41,35 @@ train_Y = train_one['INVC_CONT']
 #                       importance_type='split')
 
 # v4
-model = LGBMRegressor(boosting_type='gbdt', num_leaves=31, max_depth=- 1, learning_rate=0.1, n_estimators=400,
-                      subsample_for_bin=200000, objective=None, class_weight=None, min_split_gain=0.2,
-                      min_child_weight=0.001, min_child_samples=10, subsample=1.0, subsample_freq=0,
-                      colsample_bytree=0.9, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=- 1,
-                      importance_type='split')
+# model = LGBMRegressor(boosting_type='gbdt', num_leaves=31, max_depth=- 1, learning_rate=0.1, n_estimators=400,
+#                       subsample_for_bin=200000, objective=None, class_weight=None, min_split_gain=0.2,
+#                       min_child_weight=0.001, min_child_samples=10, subsample=1.0, subsample_freq=0,
+#                       colsample_bytree=0.9, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=- 1,
+#                       importance_type='split')
 # RMSE : 5.2965
 
+# v5
+# model = LGBMRegressor(boosting_type='gbdt', num_leaves=31, max_depth=- 1, learning_rate=0.1, n_estimators=475,
+#                       subsample_for_bin=200000, objective=None, class_weight=None, min_split_gain=0.2,
+#                       min_child_weight=0.001, min_child_samples=10, subsample=1.0, subsample_freq=0,
+#                       colsample_bytree=0.9, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=- 1,
+#                       importance_type='split')
+# RMSE :  5.2909
+
+# v6
+model = LGBMRegressor(boosting_type='gbdt', num_leaves=31, max_depth=- 1, learning_rate=0.1, n_estimators=500,
+                      subsample_for_bin=200000, objective=None, class_weight=None, min_split_gain=0.2,
+                      min_child_weight=0.001, min_child_samples=31, subsample=1.0, subsample_freq=0,
+                      colsample_bytree=0.9, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=- 1,
+                      importance_type='split')
+# RMSE :  5.2813
+
+# v7
+model = LGBMRegressor(boosting_type='gbdt', num_leaves=31, max_depth=- 1, learning_rate=0.1, n_estimators=475,
+                      subsample_for_bin=200000, objective=None, class_weight=None, min_split_gain=0.2,
+                      min_child_weight=0.001, min_child_samples=31, subsample=1.0, subsample_freq=0,
+                      colsample_bytree=0.9, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=- 1,
+                      importance_type='split')
 
 # 모델 학습
 model.fit(train_X,train_Y)
@@ -57,4 +79,4 @@ pred = model.predict(test_one)
 
 submission['INVC_CONT'] = pred
 
-submission.to_csv('csv/ensemble_v3.csv',index = False)
+submission.to_csv('csv/submit_v7.csv', index=False)
